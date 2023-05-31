@@ -103,8 +103,6 @@ public class TiUIMapView extends TiUIView
 
 	public boolean rawMap = false;
 
-	public boolean isReady = false;
-
 	public TiUIMapView(final TiViewProxy proxy, Activity activity)
 	{
 		super(proxy);

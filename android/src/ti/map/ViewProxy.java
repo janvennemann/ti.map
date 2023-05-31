@@ -360,12 +360,6 @@ public class ViewProxy extends TiViewProxy implements AnnotationDelegate
 	}
 
 	@Kroll.method
-	public boolean isReady() {
-		var view = (TiUIMapView)peekView();
-		return view != null && view.isReady;
-	}
-
-	@Kroll.method
 	public void addAnnotation(AnnotationProxy annotation)
 	{
 		// Update the JS object
