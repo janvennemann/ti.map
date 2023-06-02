@@ -573,8 +573,6 @@ public class TiUIMapView extends TiUIView
 						}
 					}
 				}
-
-				Log.d(TAG, "showAnnotations " + map.getCameraPosition().toString());
 			}
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
