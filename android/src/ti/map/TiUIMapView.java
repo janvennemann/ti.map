@@ -28,6 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -232,6 +233,8 @@ public class TiUIMapView extends TiUIView
 		if (proxy == null) {
 			return;
 		}
+
+		MapsInitializer.initialize(proxy.getActivity().getApplicationContext());
 
 		//A workaround for https://code.google.com/p/android/issues/detail?id=11676 pre Jelly Bean.
 		//This problem doesn't exist on 4.1+ since the map base view changes to TextureView from SurfaceView.
@@ -553,11 +556,25 @@ public class TiUIMapView extends TiUIView
 
 				CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
-				if (animated) {
+				if (!this.liteMode && animated) {
 					map.animateCamera(cameraUpdate);
 				} else {
 					map.moveCamera(cameraUpdate);
 				}
+
+				if (this.liteMode) {
+					// Lite mode only supports full integer zoom levels and rounds down (7.4 -> 7)
+					// so we double check that all points are visible and zoom out if necessary
+					for (TiMarker marker : markers) {
+						var markerLocation = marker.getPosition();
+						var currentLatLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
+						if (!currentLatLngBounds.contains(markerLocation)) {
+							map.moveCamera(CameraUpdateFactory.zoomOut());
+						}
+					}
+				}
+
+				Log.d(TAG, "showAnnotations " + map.getCameraPosition().toString());
 			}
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
